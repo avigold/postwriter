@@ -50,7 +50,12 @@ class PlanningOrchestrator:
         profile_name: str | None = None,
     ) -> Manuscript:
         """Run the full planning pipeline. Returns the manuscript with complete plan."""
+        from postwriter.context.condenser import ContextCondenser
+
         context_files = context_files or []
+        self._condenser = ContextCondenser(self._llm)
+        self._context_files = context_files
+        # Full context only used as fallback; agents get condensed versions
         user_context = self._prepare_user_context(context_files)
 
         # Step 1: Create manuscript
@@ -317,17 +322,21 @@ class PlanningOrchestrator:
     # Agent call helpers
     # ------------------------------------------------------------------
 
-    def _make_context(
+    async def _make_context(
         self,
         manuscript: Manuscript,
-        user_context: list[dict[str, Any]],
+        agent_role: str,
         **extra: Any,
     ) -> AgentContext:
+        """Build context with agent-specific condensed user context."""
+        condensed = await self._condenser.condense_for_agent(
+            agent_role, self._context_files,
+        )
         return AgentContext(
             manuscript_id=str(manuscript.id),
             premise=manuscript.premise or "",
             controlling_design=manuscript.controlling_design or {},
-            user_context=user_context,
+            user_context=condensed,
             extra=extra,
         )
 
@@ -338,7 +347,7 @@ class PlanningOrchestrator:
         user_context: list[dict[str, Any]],
     ) -> dict[str, Any] | None:
         agent = PremiseArchitect(self._llm, self._prompts)
-        ctx = self._make_context(manuscript, user_context, creative_brief=brief)
+        ctx = await self._make_context(manuscript, "premise_architect", creative_brief=brief)
         result = await agent.execute(ctx)
         if result.success and result.parsed:
             parsed = result.parsed
@@ -355,8 +364,8 @@ class PlanningOrchestrator:
         user_context: list[dict[str, Any]],
     ) -> dict[str, Any] | None:
         agent = SpineArchitect(self._llm, self._prompts)
-        ctx = self._make_context(
-            manuscript, user_context,
+        ctx = await self._make_context(
+            manuscript, "spine_architect",
             target_word_count=brief.get("target_word_count", 80000),
             target_chapters=brief.get("target_chapters", "30-40"),
         )
@@ -374,8 +383,8 @@ class PlanningOrchestrator:
         user_context: list[dict[str, Any]],
     ) -> dict[str, Any] | None:
         agent = CharacterDesigner(self._llm, self._prompts)
-        ctx = self._make_context(
-            manuscript, user_context,
+        ctx = await self._make_context(
+            manuscript, "character_designer",
             themes=brief.get("themes", []),
         )
         result = await agent.execute(ctx)
@@ -392,7 +401,7 @@ class PlanningOrchestrator:
         user_context: list[dict[str, Any]],
     ) -> dict[str, Any] | None:
         agent = StyleBuilder(self._llm, self._prompts)
-        ctx = self._make_context(manuscript, user_context, creative_brief=brief)
+        ctx = await self._make_context(manuscript, "style_builder", creative_brief=brief)
         result = await agent.execute(ctx)
         if result.success and result.parsed:
             parsed = result.parsed
@@ -411,8 +420,8 @@ class PlanningOrchestrator:
         preceding_chapters: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any] | None:
         agent = ChapterPlanner(self._llm, self._prompts)
-        ctx = self._make_context(
-            manuscript, user_context,
+        ctx = await self._make_context(
+            manuscript, "chapter_planner",
             act=act_data,
             themes=brief.get("themes", []),
             preceding_chapters=preceding_chapters or [],
@@ -456,7 +465,9 @@ class PlanningOrchestrator:
             },
             characters=characters,
             style_profile=style_dict,
-            user_context=user_context,
+            user_context=await self._condenser.condense_for_agent(
+                "scene_planner", self._context_files,
+            ),
         )
         result = await agent.execute(ctx)
         if result.success and result.parsed:
