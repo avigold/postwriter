@@ -3,9 +3,11 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+_COMMON = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
+
 
 class DatabaseSettings(BaseSettings):
-    model_config = {"env_prefix": "PW_DB_"}
+    model_config = {"env_prefix": "PW_DB_", **_COMMON}
 
     url: str = "postgresql+asyncpg://postwriter:postwriter@localhost:5450/postwriter"
     echo: bool = False
@@ -14,13 +16,13 @@ class DatabaseSettings(BaseSettings):
 
 
 class RedisSettings(BaseSettings):
-    model_config = {"env_prefix": "PW_REDIS_"}
+    model_config = {"env_prefix": "PW_REDIS_", **_COMMON}
 
     url: str = "redis://localhost:6379/0"
 
 
 class LLMSettings(BaseSettings):
-    model_config = {"env_prefix": "PW_LLM_"}
+    model_config = {"env_prefix": "PW_LLM_", **_COMMON}
 
     anthropic_api_key: str = ""
     opus_model: str = "claude-opus-4-6"
@@ -39,7 +41,7 @@ class LLMSettings(BaseSettings):
 
 
 class OrchestratorSettings(BaseSettings):
-    model_config = {"env_prefix": "PW_ORCH_"}
+    model_config = {"env_prefix": "PW_ORCH_", **_COMMON}
 
     max_repair_rounds: int = 3
     min_improvement_delta: float = 0.02
@@ -52,7 +54,7 @@ class OrchestratorSettings(BaseSettings):
 class Settings(BaseSettings):
     """Top-level settings aggregating all subsystems."""
 
-    model_config = {"env_prefix": "PW_", "env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {"env_prefix": "PW_", **_COMMON}
 
     project_name: str = "postwriter"
     debug: bool = False
