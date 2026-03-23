@@ -74,15 +74,30 @@ class LLMClient:
         if tool_choice:
             kwargs["tool_choice"] = tool_choice
 
+        import time
+
         last_error: Exception | None = None
         for attempt in range(MAX_RETRIES):
             try:
+                t0 = time.monotonic()
                 async with sem:
                     response = await self._client.messages.create(**kwargs)
+                duration_ms = int((time.monotonic() - t0) * 1000)
 
                 input_tokens = response.usage.input_tokens
                 output_tokens = response.usage.output_tokens
                 self.budget.record(tier, input_tokens, output_tokens)
+
+                logger.info(
+                    "LLM call completed: %s %d+%d tokens (%dms)",
+                    tier.value, input_tokens, output_tokens, duration_ms,
+                    extra={
+                        "model_tier": tier.value,
+                        "tokens_in": input_tokens,
+                        "tokens_out": output_tokens,
+                        "duration_ms": duration_ms,
+                    },
+                )
 
                 # Extract text content
                 text = ""

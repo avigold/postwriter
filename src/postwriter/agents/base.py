@@ -48,6 +48,13 @@ class BaseAgent:
 
     async def execute(self, context: AgentContext) -> AgentResult:
         """Execute the agent: render prompt, call LLM, parse response."""
+        import time
+        t0 = time.monotonic()
+        logger.info(
+            "Agent %s starting (tier=%s)", self.role, self.model_tier.value,
+            extra={"agent_role": self.role, "model_tier": self.model_tier.value,
+                   "manuscript_id": context.manuscript_id},
+        )
         system = self.build_system_prompt(context)
         user_message = self.build_user_message(context)
 
@@ -74,6 +81,14 @@ class BaseAgent:
 
             parsed = self.parse_response(response, context)
 
+            duration_ms = int((time.monotonic() - t0) * 1000)
+            logger.info(
+                "Agent %s completed (%dms, %d+%d tokens)",
+                self.role, duration_ms, response.input_tokens, response.output_tokens,
+                extra={"agent_role": self.role, "duration_ms": duration_ms,
+                       "tokens_in": response.input_tokens, "tokens_out": response.output_tokens},
+            )
+
             return AgentResult(
                 success=True,
                 agent_role=self.role,
@@ -85,7 +100,8 @@ class BaseAgent:
             )
 
         except ParseError as e:
-            logger.error("Parse error in %s: %s", self.role, e)
+            logger.error("Parse error in %s: %s", self.role, e,
+                         extra={"agent_role": self.role})
             return AgentResult(
                 success=False,
                 agent_role=self.role,

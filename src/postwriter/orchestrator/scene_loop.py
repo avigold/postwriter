@@ -63,6 +63,17 @@ class SceneLoop:
         is_pivotal: bool = False,
     ) -> BranchCandidate | None:
         """Process a single scene through the full loop."""
+        import time
+        scene_t0 = time.monotonic()
+        scene_id_short = str(scene_id)[:8]
+        logger.info(
+            "Scene %s: starting (pivotal=%s, purpose=%s)",
+            scene_id_short, is_pivotal,
+            context.scene_brief.get("purpose", "")[:60],
+            extra={"scene_id": str(scene_id), "phase": "scene_start",
+                   "manuscript_id": str(manuscript_id)},
+        )
+
         # Update status
         await self._store.update_scene_status(
             manuscript_id, scene_id, status=SceneStatus.DRAFTING
@@ -71,9 +82,16 @@ class SceneLoop:
         # Step 1: Generate branches
         candidates = await self._branch_mgr.generate_branches(context, is_pivotal)
         if not candidates:
-            logger.error("No branches generated for scene %s", scene_id)
+            logger.error("Scene %s: no branches generated", scene_id_short,
+                         extra={"scene_id": str(scene_id)})
             return None
 
+        logger.info(
+            "Scene %s: generated %d branch(es): %s",
+            scene_id_short, len(candidates),
+            ", ".join(f"{c.label}({c.word_count}w)" for c in candidates),
+            extra={"scene_id": str(scene_id), "phase": "branches_generated"},
+        )
         display.info(f"  Generated {len(candidates)} branch(es)")
 
         # Step 2: Validate and score each branch
@@ -87,15 +105,37 @@ class SceneLoop:
             scores = scores_from_validation(results)
             candidate.scores = scores
             candidate.hard_pass = scores.hard_pass
+            failed = [r.validator_name for r in results if r.passed is False]
+            logger.info(
+                "Scene %s: validated %s — hard_pass=%s, composite=%.3f%s",
+                scene_id_short, candidate.label, candidate.hard_pass,
+                scores.composite,
+                f", failed=[{', '.join(failed)}]" if failed else "",
+                extra={"scene_id": str(scene_id), "branch_label": candidate.label,
+                       "score": scores.composite, "phase": "validation"},
+            )
 
         # Step 3: Select best candidate
         best = BranchManager.select_best(candidates)
         if not best:
-            logger.error("No viable candidates for scene %s", scene_id)
+            logger.error("Scene %s: no viable candidates", scene_id_short,
+                         extra={"scene_id": str(scene_id)})
             return None
+
+        logger.info(
+            "Scene %s: selected %s (composite=%.3f, hard_pass=%s)",
+            scene_id_short, best.label,
+            best.scores.composite if best.scores else 0, best.hard_pass,
+            extra={"scene_id": str(scene_id), "branch_label": best.label,
+                   "phase": "selection"},
+        )
 
         # Step 4: Repair loop if needed
         if not best.hard_pass or (best.scores and best.scores.composite < self._policy.acceptance_threshold):
+            logger.info(
+                "Scene %s: entering repair loop", scene_id_short,
+                extra={"scene_id": str(scene_id), "phase": "repair_start"},
+            )
             await self._store.update_scene_status(
                 manuscript_id, scene_id, status=SceneStatus.REPAIRING
             )
@@ -137,6 +177,15 @@ class SceneLoop:
         )
 
         await self._session.flush()
+        scene_duration_ms = int((time.monotonic() - scene_t0) * 1000)
+        logger.info(
+            "Scene %s: ACCEPTED %s (%d words, composite=%.3f, %dms)",
+            scene_id_short, best.label, best.word_count,
+            best.scores.composite if best.scores else 0, scene_duration_ms,
+            extra={"scene_id": str(scene_id), "branch_label": best.label,
+                   "score": best.scores.composite if best.scores else 0,
+                   "duration_ms": scene_duration_ms, "phase": "scene_complete"},
+        )
         display.success(
             f"  Accepted: {best.label} "
             f"({best.word_count} words, "

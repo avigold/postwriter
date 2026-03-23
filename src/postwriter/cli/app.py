@@ -67,9 +67,14 @@ async def _run_new(context_dir: str | None, project_dir: str, profile_name: str 
     from postwriter.cli.bootstrap import run_bootstrap
     from postwriter.db.session import get_engine, get_session_factory
     from postwriter.llm.client import LLMClient
+    from postwriter.logging_config import setup_logging
     from postwriter.orchestrator.planner import PlanningOrchestrator
 
     settings = get_settings()
+
+    # Set up logging
+    log_file = setup_logging(log_dir=Path(project_dir) / "logs")
+    display.info(f"Logging to: {log_file}")
 
     # Apply profile if specified
     if profile_name:
