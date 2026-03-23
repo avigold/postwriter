@@ -30,26 +30,25 @@
 
 ## Your Task
 
-Design the full cast for this novel. Include:
+Design the cast for this novel. Aim for 4-6 characters total — a tight cast, not a sprawling one. Include 1-2 POV characters, 1-2 antagonists, and 2-3 supporting characters.
 
-1. **Main characters** (POV characters and primary antagonists): Full psychological profiles with speaking traits, secrets, moral constraints, and arc hypotheses.
+IMPORTANT: Keep each character's entry concise. Biographies should be 2 sentences. Speaking traits should be a few keywords. Do not write paragraphs where a phrase will do.
 
-2. **Significant secondary characters**: Those who appear in multiple scenes and serve thematic or plot functions. Slightly less detailed but still psychologically grounded.
-
-3. **Relationship dynamics**: How the cast as a whole creates dramatic tension and embodies the themes.
-
-For each character, provide:
-- name, aliases, age
-- biography (2-4 sentences, focused on what drives them)
-- motives (primary and secondary)
-- fears and desires
-- secrets (at least one)
-- social_position
-- speaking_traits (vocabulary, rhythm, patterns, tics — these must be distinct between characters)
-- movement_traits (physical mannerisms)
-- moral_constraints (lines they won't cross)
-- arc_hypothesis (where they start → where they might end)
+For each character, provide these fields as JSON:
+- name, aliases (array), age
+- biography (2 sentences max)
+- motives: {primary: str, secondary: str}
+- fears (array of short strings)
+- desires (array of short strings)
+- secrets (array, at least one)
+- social_position (one phrase)
+- speaking_traits: {pattern: str, vocabulary: str}
+- movement_traits: {posture: str, gesture: str}
+- moral_constraints (array)
+- arc_hypothesis (one sentence)
 - is_pov_character (true/false)
-- relationships to other characters in the cast
+- relationships: [{character: str, type: str, description: str}]
+
+Also provide relationship_dynamics: one paragraph on how the cast creates tension.
 
 Respond with a JSON object matching the CastResponse schema.

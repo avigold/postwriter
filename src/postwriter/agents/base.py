@@ -18,6 +18,34 @@ logger = logging.getLogger(__name__)
 PARSE_RETRY_MAX = 2
 
 
+def _repair_truncated_json(text: str) -> Any:
+    """Attempt to repair JSON truncated by max_tokens.
+
+    Strategy: strip the last incomplete value, then close all open brackets.
+    """
+    # Remove trailing incomplete string or value
+    # Find the last complete key-value pair
+    import re
+    # Strip trailing incomplete content after last comma or complete value
+    text = text.rstrip()
+    # Remove trailing partial strings (unclosed quotes)
+    if text.count('"') % 2 != 0:
+        last_quote = text.rfind('"')
+        text = text[:last_quote + 1]
+    # Strip to last comma, closing bracket, or closing brace
+    while text and text[-1] not in ",]}":
+        text = text[:-1]
+    # Remove trailing comma
+    text = text.rstrip(",")
+    # Count open brackets and close them
+    opens = text.count("{") - text.count("}")
+    opens_arr = text.count("[") - text.count("]")
+    text += "]" * opens_arr + "}" * opens
+
+    logger.debug("Repaired truncated JSON (%d open braces, %d open brackets)", opens, opens_arr)
+    return json.loads(text)
+
+
 class BaseAgent:
     """Base class for all agents in the fiction system.
 
@@ -201,7 +229,11 @@ class BaseAgent:
                 # Fix common JSON issues: trailing commas
                 import re
                 text = re.sub(r",\s*([}\]])", r"\1", text)
-                data = json.loads(text)
+                try:
+                    data = json.loads(text)
+                except json.JSONDecodeError:
+                    # Truncated JSON (max_tokens hit) — try to repair by closing brackets
+                    data = _repair_truncated_json(text)
                 return self.response_model.model_validate(data)
             except (json.JSONDecodeError, Exception) as e:
                 raise ParseError(self.role, f"Failed to parse JSON: {e}") from e
@@ -209,7 +241,7 @@ class BaseAgent:
         # Return raw text for prose agents
         return response.text
 
-    def _build_tools(self) -> list[dict[str, Any]] | None:
+    def _build_tools(self) -> list[dict[str, Any]] | None:  # noqa: keep together
         """Build tool definitions for structured output."""
         if not self.response_model:
             return None
