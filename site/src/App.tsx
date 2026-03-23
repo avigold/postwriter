@@ -104,10 +104,10 @@ function App() {
         </p>
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
-            href="#install"
+            href="/read"
             className="rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/25 transition-all hover:bg-accent-light hover:shadow-xl hover:shadow-accent/30"
           >
-            Get started
+            Read a generated novel
           </a>
           <a
             href="https://github.com/avigold/postwriter"
