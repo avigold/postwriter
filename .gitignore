@@ -31,9 +31,10 @@ Thumbs.db
 htmlcov/
 .mypy_cache/
 
-# Output and logs
+# Output, logs, and project state
 output/
 logs/
+.postwriter
 
 # Claude Code
 .claude/
