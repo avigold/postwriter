@@ -13,7 +13,7 @@ from postwriter.types import AgentContext, ModelTier
 class CharacterDesign(BaseModel):
     name: str
     aliases: list[str] = Field(default_factory=list)
-    age: str | None = None
+    age: str | int | None = None
     biography: str = Field(description="2-4 sentence biography")
     motives: dict[str, str] = Field(description="Primary and secondary motives")
     fears: list[str] = Field(default_factory=list)
