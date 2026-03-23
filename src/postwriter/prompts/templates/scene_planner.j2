@@ -62,15 +62,16 @@ POV Character: {{ chapter_brief.get("pov_character", "") }}
 Design {{ chapter_brief.get("scene_count", 3) }} scenes for this chapter. For each scene, specify all fields in the SceneBrief schema:
 
 - ordinal, pov_character, location, time_marker
-- purpose, conflict, stakes, revelation (if any)
-- emotional_turn: how the emotional state shifts
-- dramatic_function: the scene's structural role
-- characters_present
-- prohibited_moves: what the scene must NOT do
-- themes_touched, symbols_touched
-- setup_links (what earlier setups this pays off)
-- payoff_links (what this sets up for later)
-- state_mutations: what changes after this scene (character knowledge, relationships, plot state)
-- is_pivotal: true if this is a structurally critical scene
+IMPORTANT: Be concise. Each field should be a phrase or single sentence.
+
+- purpose (1 sentence), conflict (1 sentence), stakes (1 sentence), revelation (1 sentence or null)
+- emotional_turn (1 sentence, e.g. "reluctance to resolve")
+- dramatic_function (one word: establishment, escalation, pivot, relief, climax)
+- characters_present (list of names)
+- prohibited_moves (short phrases, 1-3 items)
+- themes_touched, symbols_touched (lists of names)
+- setup_links, payoff_links (short phrases, 1-3 items each)
+- state_mutations: {key: "what changed"} — brief entries only
+- is_pivotal: true/false
 
 Respond with a JSON object matching the ScenePlanResponse schema.

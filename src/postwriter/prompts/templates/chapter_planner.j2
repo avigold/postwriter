@@ -43,17 +43,18 @@ Target Chapter Count: {{ act.get("chapter_count", 8) }}
 
 ## Your Task
 
-Plan the individual chapters for this act. For each chapter, specify:
+IMPORTANT: Be concise. Every field should be a short phrase or single sentence. Titles should be 1-4 words. Scene summaries should be one sentence each. Do not write paragraphs.
 
-- ordinal, title, function
-- emotional_contour: {opening_emotion, peak_emotion, closing_emotion, arc_shape}
-- opening_pressure and closing_pressure (0.0-1.0)
-- scene_count and one-sentence scene_summaries
-- themes_active in this chapter
-- pov_character name
-- transition_from_previous: how it connects to the prior chapter
-- contrast_with_neighbors: how it differs from adjacent chapters in tone/pace
+Plan the individual chapters for this act. For each chapter:
 
-Also provide rhythm_notes: an overview of how pacing varies across these chapters.
+- ordinal (int), title (1-4 words), function (1 sentence)
+- emotional_contour: {opening_emotion: "one word", peak_emotion: "one word", closing_emotion: "one word", arc_shape: "one phrase"}
+- opening_pressure, closing_pressure (floats 0.0-1.0)
+- scene_count (int, typically 2-4), scene_summaries (one sentence each)
+- themes_active (list of theme names)
+- pov_character (name)
+- transition_from_previous (1 sentence), contrast_with_neighbors (1 sentence)
+
+Also provide rhythm_notes (2-3 sentences).
 
 Respond with a JSON object matching the ChapterPlanResponse schema.

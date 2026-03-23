@@ -49,20 +49,22 @@ Produce a detailed premise and controlling design that includes:
    - Symbolic patterns
    - Structural choices
 
+IMPORTANT: Be concise. The premise should be 2-3 short paragraphs, not an essay. Each controlling_design field should be 1-2 sentences. Each thematic_architecture list should have 3-5 short items.
+
 Respond with a JSON object matching this structure:
 {
-  "premise": "...",
+  "premise": "2-3 paragraphs",
   "controlling_design": {
-    "central_question": "...",
-    "arc_shape": "...",
-    "turning_points": ["..."],
-    "emotional_trajectory": "...",
-    "plot_internal_relationship": "...",
-    "tonal_range": "..."
+    "central_question": "one sentence",
+    "arc_shape": "one phrase",
+    "turning_points": ["one sentence each, 3-5 items"],
+    "emotional_trajectory": "one sentence",
+    "plot_internal_relationship": "one sentence",
+    "tonal_range": "one sentence"
   },
   "thematic_architecture": {
-    "character_tensions": ["..."],
-    "symbolic_patterns": ["..."],
-    "structural_embodiments": ["..."]
+    "character_tensions": ["one phrase each"],
+    "symbolic_patterns": ["one phrase each"],
+    "structural_embodiments": ["one phrase each"]
   }
 }
