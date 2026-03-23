@@ -53,7 +53,7 @@ class CharacterDesigner(BaseAgent):
     model_tier = ModelTier.OPUS
     template_name = "character_designer.j2"
     response_model = CastResponse
-    use_tool_call = False  # Opus + tool_use + complex schema times out; use JSON-in-text
+    use_tool_call = False  # Opus returns empty {} with tool_use on complex schemas; JSON-in-text works
 
     def build_template_context(self, context: AgentContext) -> dict[str, Any]:
         return {
