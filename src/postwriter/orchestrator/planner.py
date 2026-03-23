@@ -58,6 +58,7 @@ class PlanningOrchestrator:
             status=ManuscriptStatus.PLANNING,
         )
         await self._session.flush()
+        await self._session.commit()
         display.success(f"Manuscript created: {manuscript.id}")
 
         # Step 2: Generate premise
@@ -73,6 +74,7 @@ class PlanningOrchestrator:
         manuscript.premise = premise_result["premise"]
         manuscript.controlling_design = premise_result["controlling_design"]
         await self._session.flush()
+        await self._session.commit()
 
         # HUMAN CHECKPOINT 1: Premise approval
         display.show_premise(
@@ -111,6 +113,7 @@ class PlanningOrchestrator:
             )
             act_records.append((act, act_data))
         await self._session.flush()
+        await self._session.commit()
         display.success(f"Created {len(act_records)} acts")
 
         # Step 5: Design characters
@@ -146,6 +149,7 @@ class PlanningOrchestrator:
                  "arc_hypothesis": c.arc_hypotheses.get("hypothesis", "")}
                 for c in char_records
             ])
+            await self._session.commit()
             display.success(f"Created {len(char_records)} characters")
 
         # Step 6: Build style profile
@@ -174,6 +178,7 @@ class PlanningOrchestrator:
                 recurrence_caps=style_result.get("recurrence_caps", {}),
             )
             await self._session.flush()
+            await self._session.commit()
             display.success("Style profile created")
 
         # Step 7: Plan chapters for each act
@@ -209,6 +214,7 @@ class PlanningOrchestrator:
                     ch_data["_scene_data"] = ch_data.get("scene_summaries", [])
                     all_chapters.append(ch_data)
                 await self._session.flush()
+                await self._session.commit()
 
         display.success(f"Planned {len(all_chapters)} chapters")
 
@@ -255,6 +261,7 @@ class PlanningOrchestrator:
                     )
                     total_scenes += 1
                 await self._session.flush()
+                await self._session.commit()
 
         display.success(f"Planned {total_scenes} scenes")
 

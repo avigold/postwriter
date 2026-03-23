@@ -131,6 +131,7 @@ class FictionOrchestrator:
                 )
 
             await self._session.flush()
+            await self._session.commit()
             display.info("")  # Newline after progress bar
 
         # Update manuscript status
