@@ -7,6 +7,7 @@ import logging
 from typing import Any
 
 import anthropic
+import httpx
 
 from postwriter.config import LLMSettings
 from postwriter.errors import LLMError
@@ -28,7 +29,7 @@ class LLMClient:
         self.budget = budget or TokenBudget()
         self._client = anthropic.AsyncAnthropic(
             api_key=settings.anthropic_api_key,
-            timeout=300.0,  # 5 minute timeout per request
+            timeout=httpx.Timeout(connect=10.0, read=600.0, write=600.0, pool=600.0),
         )
 
         # Model ID mapping
