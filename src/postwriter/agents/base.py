@@ -37,6 +37,7 @@ class BaseAgent:
     model_tier: ModelTier = ModelTier.SONNET
     template_name: str = ""
     response_model: type[BaseModel] | None = None
+    use_tool_call: bool = True  # Set False to use JSON-in-text instead of tool_use
 
     def __init__(
         self,
@@ -65,11 +66,11 @@ class BaseAgent:
 
         messages = [{"role": "user", "content": user_message}]
 
-        # Tools for structured output
-        tools = self._build_tools() if self.response_model else None
+        # Tools for structured output (some agents opt out due to API performance)
+        tools = self._build_tools() if (self.response_model and self.use_tool_call) else None
         tool_choice = (
             {"type": "tool", "name": "respond"}
-            if self.response_model
+            if tools
             else None
         )
         logger.debug(
