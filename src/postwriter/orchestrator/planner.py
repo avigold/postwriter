@@ -58,10 +58,10 @@ class PlanningOrchestrator:
         # Full context only used as fallback; agents get condensed versions
         user_context = self._prepare_user_context(context_files)
 
-        # Step 1: Create manuscript
+        # Step 1: Create manuscript (title is a placeholder until premise is approved)
         display.section("Creating Manuscript")
         manuscript = await self._store.create_manuscript(
-            title=creative_brief.get("genre", "Novel"),
+            title="Untitled",
             status=ManuscriptStatus.PLANNING,
         )
         await self._session.flush()
@@ -102,6 +102,25 @@ class PlanningOrchestrator:
         if not display.confirm("Approve this premise?"):
             display.warning("Premise rejected. You can re-run the bootstrap.")
             return manuscript
+
+        # Ask for a title now that the user has seen the premise
+        from rich.prompt import Prompt
+        title = Prompt.ask(
+            "  [bold]Title for this novel[/bold]",
+            default="Untitled",
+        )
+        manuscript.title = title
+        await self._session.flush()
+        await self._session.commit()
+
+        # Update .postwriter with the real title
+        if project_dir:
+            save_project(Path(project_dir), ProjectState(
+                manuscript_id=str(manuscript.id),
+                phase="planning",
+                profile=profile_name,
+                title=title,
+            ))
 
         # Step 3: Generate spine (act structure)
         display.section("Designing Act Structure")
