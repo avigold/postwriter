@@ -64,11 +64,13 @@ async def _handle_existing(
 
     if state.phase == "complete":
         choice = Prompt.ask(
-            "  [bold]Manuscript is complete. What would you like to do?[/bold]",
-            choices=["export", "dashboard", "new"],
-            default="export",
+            "  [bold]What would you like to do?[/bold]",
+            choices=["revise", "export", "dashboard", "new"],
+            default="revise",
         )
-        if choice == "export":
+        if choice == "revise":
+            await _do_full_revision(project_dir, state, context_dir)
+        elif choice == "export":
             await _do_export(project_dir, uuid.UUID(state.manuscript_id))
         elif choice == "dashboard":
             await _do_dashboard(uuid.UUID(state.manuscript_id))
@@ -296,6 +298,41 @@ async def _do_revision(session, llm, manuscript_id, project_dir):
     if display.confirm("Run global revision passes?"):
         reviser = GlobalRevisionOrchestrator(session, llm)
         await reviser.run(manuscript_id)
+
+
+async def _do_full_revision(
+    project_dir: Path, state: ProjectState, context_dir: str | None
+) -> None:
+    """Run global revision as a standalone operation on a complete manuscript."""
+    from postwriter.db.session import get_engine, get_session_factory
+    from postwriter.llm.client import LLMClient
+    from postwriter.orchestrator.global_revision import GlobalRevisionOrchestrator
+
+    settings = get_settings()
+    if state.profile:
+        from postwriter.profiles import apply_profile
+        apply_profile(state.profile, settings.orchestrator, settings.llm)
+
+    if not settings.llm.anthropic_api_key:
+        display.error("No Anthropic API key found. Set PW_LLM_ANTHROPIC_API_KEY or add it to .env")
+        return
+
+    engine = get_engine(settings)
+    session_factory = get_session_factory(engine)
+    manuscript_id = uuid.UUID(state.manuscript_id)
+
+    async with session_factory() as session:
+        llm = LLMClient(settings.llm)
+        try:
+            reviser = GlobalRevisionOrchestrator(session, llm)
+            await reviser.run(manuscript_id)
+
+            if display.confirm("Export the revised manuscript?"):
+                await _do_export(project_dir, manuscript_id)
+        finally:
+            await llm.close()
+
+    await engine.dispose()
 
 
 async def _do_export(project_dir: Path, manuscript_id: uuid.UUID) -> None:
