@@ -123,10 +123,14 @@ class FictionOrchestrator:
                     total_words += result.word_count
 
                 # Progress update
+                total_scenes_so_far = 0
+                for ch in chapters[:ch_idx + 1]:
+                    ch_scenes = await self._store.get_scenes(ch.id)
+                    total_scenes_so_far += len(ch_scenes)
                 display.show_progress(
                     "Drafting",
                     total_scenes_processed,
-                    sum(len(await self._store.get_scenes(ch.id)) for ch in chapters[:ch_idx + 1]),
+                    total_scenes_so_far,
                     detail=f"~{total_words:,} words",
                 )
 
