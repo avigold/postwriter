@@ -9,7 +9,7 @@ const STEPS = [
   {
     num: "02",
     title: "Draft",
-    desc: "Each scene is drafted 3\u20135 times in parallel using distinct stylistic strategies. Not paraphrases \u2014 different rhetorical approaches.",
+    desc: "Each scene is drafted 3\u20135 times in parallel, each using a distinct rhetorical strategy \u2014 subtext-heavy, lyrical, compressed. The best survives.",
   },
   {
     num: "03",
@@ -19,7 +19,7 @@ const STEPS = [
   {
     num: "04",
     title: "Repair",
-    desc: "Targeted rewrites fix specific problems while preserving what works. No gratuitous paraphrase. No flattening.",
+    desc: "Targeted rewrites fix specific problems while preserving what works. The rewriter touches only what's broken.",
   },
   {
     num: "05",
@@ -36,11 +36,11 @@ const STEPS = [
 const FEATURES = [
   {
     title: "Explicit story state",
-    desc: "The database is the source of truth, not the prose. Character knowledge, timelines, promises \u2014 all tracked.",
+    desc: "The database tracks character knowledge, timelines, and promises. The prose is output, not the source of truth.",
   },
   {
-    title: "Branching, not paraphrasing",
-    desc: "Branches represent rhetorical strategies: subtext-heavy, lyrical, compressed, intimate. The best is selected.",
+    title: "Deliberate variation",
+    desc: "Each branch represents a rhetorical strategy \u2014 subtext-heavy, lyrical, compressed, intimate \u2014 and the strongest is selected.",
   },
   {
     title: "54 device types",
@@ -92,15 +92,14 @@ function App() {
           Early access &mdash; free during beta
         </div>
         <h1 className="text-5xl font-bold tracking-tight leading-[1.1] sm:text-6xl">
-          AI that writes novels,
+          The whole novel.
           <br />
-          <span className="text-accent">not first drafts.</span>
+          <span className="text-accent">Every draft. Every pass.</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-          Postwriter is an orchestrated system for generating complete, high-quality
-          long-form fiction. Multi-pass planning, branching, validation, and revision
-          across an entire manuscript. Not a chatbot. Not a one-shot generator.
-          A system.
+          Postwriter orchestrates the entire process of writing a novel: planning,
+          multi-branch drafting, validation, repair, and manuscript-level revision.
+          One command. An entire book.
         </p>
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
@@ -240,8 +239,8 @@ $ uv run postwriter new`}
         <div className="mx-auto max-w-xl px-6 text-center">
           <h2 className="text-3xl font-bold tracking-tight">Hosted version coming soon</h2>
           <p className="mt-4 text-muted">
-            No setup, no API keys. Just write. Leave your email and we'll
-            notify you when the hosted version launches.
+            We're building a hosted version so you can write without
+            managing infrastructure. Leave your email for early access.
           </p>
           {submitted ? (
             <div className="mt-8 rounded-lg border border-green-200 bg-green-50 px-6 py-4 text-green-800">
