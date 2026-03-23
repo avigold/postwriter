@@ -82,4 +82,4 @@ class CharacterDesigner(BaseAgent):
         return base
 
     def _max_tokens(self) -> int:
-        return 8192
+        return 16384

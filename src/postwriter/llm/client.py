@@ -26,7 +26,10 @@ class LLMClient:
     def __init__(self, settings: LLMSettings, budget: TokenBudget | None = None) -> None:
         self.settings = settings
         self.budget = budget or TokenBudget()
-        self._client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+        self._client = anthropic.AsyncAnthropic(
+            api_key=settings.anthropic_api_key,
+            timeout=300.0,  # 5 minute timeout per request
+        )
 
         # Model ID mapping
         self._model_map: dict[ModelTier, str] = {
@@ -142,6 +145,16 @@ class LLMClient:
                         "API error on %s (attempt %d/%d): %s",
                         tier.value, attempt + 1, MAX_RETRIES, e,
                     )
+                    await asyncio.sleep(wait)
+
+            except (TimeoutError, asyncio.TimeoutError, OSError) as e:
+                last_error = e  # type: ignore[assignment]
+                wait = RETRY_BACKOFF_BASE ** attempt
+                logger.warning(
+                    "Connection error on %s (attempt %d/%d): %s",
+                    tier.value, attempt + 1, MAX_RETRIES, e,
+                )
+                if attempt < MAX_RETRIES - 1:
                     await asyncio.sleep(wait)
 
         raise LLMError(tier.value, str(last_error))
