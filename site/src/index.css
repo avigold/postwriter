@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0a0a0a;
+  --color-paper: #fafaf9;
+  --color-accent: #6d28d9;
+  --color-accent-light: #8b5cf6;
+  --color-muted: #78716c;
+  --color-border: #e7e5e4;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
