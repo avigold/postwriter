@@ -50,7 +50,8 @@ const darkStyles: IReactReaderStyle = {
 };
 
 function Reader() {
-  const [location, setLocation] = useState<string | number>(0);
+  // Start on the title page, skipping the auto-generated TOC nav page
+  const [location, setLocation] = useState<string | number>("title.xhtml");
 
   const locationChanged = useCallback((loc: string) => {
     setLocation(loc);
