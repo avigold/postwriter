@@ -28,8 +28,8 @@ function Reader() {
         </a>
       </header>
 
-      {/* Reader */}
-      <div className="flex-1" style={{ minHeight: "calc(100vh - 52px)" }}>
+      {/* Reader — react-reader needs a fixed-height container */}
+      <div style={{ height: "calc(100vh - 52px)", position: "relative" }}>
         <ReactReader
           url="/black-meat-fast-draft.epub"
           location={location}
