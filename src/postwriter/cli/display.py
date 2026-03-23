@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
+import random
+from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator
 from typing import Any
 
 from rich.console import Console
@@ -11,6 +15,76 @@ from rich.table import Table
 from rich.text import Text
 
 console = Console()
+
+# Writerly thinking messages, rotated during long operations
+_THINKING_VERBS = [
+    "Fabulating",
+    "Ruminating",
+    "Composing",
+    "Imagining",
+    "Weighing alternatives",
+    "Plotting",
+    "Considering",
+    "Sketching",
+    "Drafting in the margins",
+    "Turning a phrase",
+    "Finding the thread",
+    "Pacing the room",
+    "Staring out the window",
+    "Listening to the characters",
+    "Crossing things out",
+    "Reaching for the right word",
+    "Building the scene",
+    "Following a hunch",
+    "Wrestling with structure",
+    "Chasing the voice",
+]
+
+
+@asynccontextmanager
+async def thinking(label: str | None = None) -> AsyncGenerator[None, None]:
+    """Show an animated thinking spinner with writerly status messages.
+
+    Usage:
+        async with display.thinking("Designing premise"):
+            result = await slow_operation()
+    """
+    stop = asyncio.Event()
+    task = asyncio.create_task(_spinner_loop(stop, label))
+    try:
+        yield
+    finally:
+        stop.set()
+        await task
+        # Clear the spinner line
+        console.print("\r" + " " * 80 + "\r", end="")
+
+
+async def _spinner_loop(stop: asyncio.Event, label: str | None) -> None:
+    frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+    verbs = list(_THINKING_VERBS)
+    random.shuffle(verbs)
+    verb_idx = 0
+    frame_idx = 0
+    verb = label or verbs[0]
+    ticks = 0
+
+    while not stop.is_set():
+        frame = frames[frame_idx % len(frames)]
+        console.print(f"\r  [cyan]{frame}[/cyan] [dim]{verb}...[/dim]   ", end="")
+        frame_idx += 1
+        ticks += 1
+
+        # Rotate verb every ~4 seconds (40 ticks at 100ms)
+        if not label and ticks % 40 == 0:
+            verb_idx = (verb_idx + 1) % len(verbs)
+            verb = verbs[verb_idx]
+
+        try:
+            await asyncio.wait_for(stop.wait(), timeout=0.1)
+            break
+        except asyncio.TimeoutError:
+            pass
 
 
 def banner() -> None:

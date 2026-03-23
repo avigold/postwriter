@@ -69,15 +69,17 @@ class BaseAgent:
         )
 
         try:
-            response = await self._llm.complete(
-                tier=self.model_tier,
-                messages=messages,
-                system=system,
-                max_tokens=self._max_tokens(),
-                temperature=self._temperature(),
-                tools=tools,
-                tool_choice=tool_choice,
-            )
+            from postwriter.cli.display import thinking
+            async with thinking(self._thinking_label()):
+                response = await self._llm.complete(
+                    tier=self.model_tier,
+                    messages=messages,
+                    system=system,
+                    max_tokens=self._max_tokens(),
+                    temperature=self._temperature(),
+                    tools=tools,
+                    tool_choice=tool_choice,
+                )
 
             parsed = self.parse_response(response, context)
 
@@ -190,6 +192,23 @@ class BaseAgent:
             "description": f"Provide your {self.role} response in structured format.",
             "input_schema": schema,
         }]
+
+    # Role-specific labels for the thinking spinner
+    _ROLE_LABELS: dict[str, str] = {
+        "premise_architect": "Designing the premise",
+        "spine_architect": "Building the structural spine",
+        "character_designer": "Imagining the cast",
+        "style_builder": "Defining the voice",
+        "chapter_planner": "Mapping the chapters",
+        "scene_planner": "Sketching scenes",
+        "scene_writer": None,  # Use rotating verbs for the creative work
+        "local_rewriter": "Revising",
+        "promise_seeder": "Tracing the promises",
+    }
+
+    def _thinking_label(self) -> str | None:
+        """Return a spinner label for this agent, or None for rotating verbs."""
+        return self._ROLE_LABELS.get(self.role)
 
     def _max_tokens(self) -> int:
         """Default max tokens. Override for agents that need more."""
