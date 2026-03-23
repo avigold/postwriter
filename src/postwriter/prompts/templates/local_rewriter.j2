@@ -1,0 +1,36 @@
+## Current Scene Prose
+
+{{ current_prose }}
+
+## Repair Instructions
+
+{% for action in repair_actions %}
+### [{{ action.priority }}] {{ action.dimension }}
+
+{{ action.instruction }}
+
+{% if action.preserve %}
+**Preserve:** {{ action.preserve | join(", ") }}
+{% endif %}
+{% if action.banned %}
+**Do NOT:** {{ action.banned | join(", ") }}
+{% endif %}
+
+{% endfor %}
+
+## Scene Brief (for reference)
+
+Purpose: {{ scene_brief.get("purpose", "") }}
+Emotional Turn: {{ scene_brief.get("emotional_turn", "") }}
+Conflict: {{ scene_brief.get("conflict", "") }}
+
+{% if style_profile.get("banned_phrases") %}
+## Banned Phrases (never use)
+{{ style_profile.banned_phrases | join(", ") }}
+{% endif %}
+
+## Instructions
+
+Rewrite the scene prose above, fixing ONLY the issues described in the repair instructions.
+Preserve everything that is not specifically flagged for repair.
+Output ONLY the revised prose — no headers, no commentary, no explanations.

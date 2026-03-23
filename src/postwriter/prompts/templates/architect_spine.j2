@@ -1,0 +1,50 @@
+## Novel Premise
+
+{{ premise }}
+
+## Controlling Design
+
+Central Question: {{ controlling_design.get("central_question", "") }}
+Arc Shape: {{ controlling_design.get("arc_shape", "") }}
+Emotional Trajectory: {{ controlling_design.get("emotional_trajectory", "") }}
+Tonal Range: {{ controlling_design.get("tonal_range", "") }}
+
+{% if controlling_design.get("turning_points") %}
+### Key Turning Points
+{% for tp in controlling_design.turning_points %}
+- {{ tp }}
+{% endfor %}
+{% endif %}
+
+## Target Scope
+
+- Target word count: ~{{ target_word_count }} words
+- Target chapter count: {{ target_chapters }}
+
+{% if user_context %}
+## User-Provided Context
+{% for ctx in user_context %}
+### {{ ctx.name }} ({{ ctx.type }})
+{{ ctx.content }}
+{% endfor %}
+{% endif %}
+
+## Your Task
+
+Design the structural spine of this novel. Produce:
+
+1. **Acts**: Break the novel into major movements (typically 3-5 acts). Each act should include:
+   - `name`: A working title for the act
+   - `ordinal`: Act number
+   - `purpose`: What this act accomplishes dramatically
+   - `emotional_arc`: The emotional movement within this act
+   - `chapter_count`: Estimated number of chapters in this act
+
+2. **Major Turning Points**: The 3-5 moments where the novel's direction fundamentally shifts. Each should include:
+   - `description`: What happens
+   - `approximate_position`: Where in the manuscript (e.g., "end of act 1", "chapter 15")
+   - `function`: What dramatic function this serves (reversal, revelation, escalation, etc.)
+
+3. **Arc Summary**: One paragraph describing how the full arc feels from start to finish.
+
+Respond with a JSON object matching the SpineResponse schema.

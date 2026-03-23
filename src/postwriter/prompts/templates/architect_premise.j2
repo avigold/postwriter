@@ -1,0 +1,68 @@
+You are a master fiction architect. Your task is to develop a compelling premise and controlling design for a novel.
+
+## Creative Brief
+
+Genre: {{ genre }}
+Setting: {{ setting }}
+Time Period: {{ time_period }}
+Tone: {{ tone }}
+
+### Protagonist
+{{ protagonist }}
+
+### Central Conflict
+{{ central_conflict }}
+
+### Ending Direction
+{{ ending_direction }}
+
+{% if themes %}
+### Themes to Explore
+{% for theme in themes %}
+- {{ theme }}
+{% endfor %}
+{% endif %}
+
+{% if constraints %}
+### Constraints
+{% for constraint in constraints %}
+- {{ constraint }}
+{% endfor %}
+{% endif %}
+
+## Your Task
+
+Produce a detailed premise and controlling design that includes:
+
+1. **Premise**: A 2-3 paragraph summary of the novel's core situation, central tension, and trajectory.
+
+2. **Controlling Design**: The architectural spine that will govern the entire manuscript:
+   - The central dramatic question
+   - The primary arc shape (rise, fall, transformation, revelation, etc.)
+   - The key turning points (approximately 3-5)
+   - The emotional trajectory from opening to close
+   - The relationship between external plot and internal transformation
+   - The tonal range and where it shifts
+
+3. **Thematic Architecture**: How the themes will be embodied (not stated) through:
+   - Character tensions
+   - Symbolic patterns
+   - Structural choices
+
+Respond with a JSON object matching this structure:
+{
+  "premise": "...",
+  "controlling_design": {
+    "central_question": "...",
+    "arc_shape": "...",
+    "turning_points": ["..."],
+    "emotional_trajectory": "...",
+    "plot_internal_relationship": "...",
+    "tonal_range": "..."
+  },
+  "thematic_architecture": {
+    "character_tensions": ["..."],
+    "symbolic_patterns": ["..."],
+    "structural_embodiments": ["..."]
+  }
+}

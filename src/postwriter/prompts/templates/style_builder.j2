@@ -1,0 +1,49 @@
+## Novel Premise
+
+{{ premise }}
+
+## Genre and Tone
+
+Genre: {{ genre }}
+Tone: {{ tone }}
+
+{% if voice_preferences %}
+## Author's Voice Preferences
+
+{{ voice_preferences }}
+{% endif %}
+
+{% if user_context %}
+## User-Provided Style Context
+{% for ctx in user_context %}
+### {{ ctx.name }} ({{ ctx.type }})
+{{ ctx.content }}
+{% endfor %}
+{% endif %}
+
+## Your Task
+
+Design a complete style profile for this novel. The profile should specify:
+
+1. **Voice description**: A paragraph capturing the target narrative voice.
+
+2. **Numeric targets** (all 0.0-1.0 scales):
+   - directness, subtext_target, irony_target, lyricism_target
+   - fragment_tolerance, exposition_tolerance, abstraction_tolerance
+
+3. **Density bands**:
+   - sentence_length_bands: target distribution of short/medium/long sentences
+   - dialogue_density_band: what percentage of scene text should be dialogue
+   - metaphor_density_band: metaphors per 1000 words
+
+4. **Imagery preferences**:
+   - preferred_imagery_domains: 3-6 source domains for figurative language
+   - banned_imagery_domains: domains to avoid
+
+5. **Banned phrases**: At least 10-15 common cliches and AI writing tics to avoid. Include things like "a sense of", "couldn't help but", "it was as if", "suddenly", "in that moment", "a wave of", "the weight of".
+
+6. **Banned moves**: Narrative moves to avoid (e.g., "mirror self-description", "waking up opening").
+
+7. **Recurrence caps**: Maximum occurrences per chapter for specific devices that risk overuse.
+
+Respond with a JSON object matching the StyleProfileResponse schema.

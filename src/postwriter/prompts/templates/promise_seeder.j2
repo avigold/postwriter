@@ -1,0 +1,37 @@
+## Novel Premise
+
+{{ premise }}
+
+## Controlling Design
+
+{{ controlling_design | tojson(indent=2) }}
+
+## Characters
+
+{% for char in characters %}
+- **{{ char.name }}**: {{ char.get("biography", "") }}
+  Secrets: {{ char.get("secrets", []) | tojson }}
+  Arc: {{ char.get("arc_hypothesis", "") }}
+{% endfor %}
+
+{% if acts %}
+## Act Structure
+{% for act in acts %}
+### Act {{ act.get("ordinal", loop.index) }}: {{ act.get("name", "") }}
+Purpose: {{ act.get("purpose", "") }}
+{% endfor %}
+{% endif %}
+
+## Your Task
+
+Identify all significant narrative promises that this novel's design creates. For each promise:
+
+- **type**: plot, emotional, thematic, symbolic, tonal, or rhetorical
+- **description**: What the promise is (be specific)
+- **salience**: How much weight this carries for the reader (0.0-1.0)
+- **expected_introduction**: When/where this promise is introduced
+- **expected_resolution_window**: When it should be resolved
+
+Also provide notes on how these promises interlock — which promises reinforce each other, which create tension between them, and which are load-bearing for the novel's emotional climax.
+
+Respond with a JSON object matching the PromiseSeedResponse schema.

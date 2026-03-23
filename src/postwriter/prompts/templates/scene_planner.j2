@@ -1,0 +1,76 @@
+## Novel Premise
+
+{{ premise }}
+
+## Chapter Brief
+
+Title: {{ chapter_brief.get("title", "") }}
+Function: {{ chapter_brief.get("function", "") }}
+Emotional Contour: {{ chapter_brief.get("emotional_contour", {}) | tojson }}
+Opening Pressure: {{ chapter_brief.get("opening_pressure", 0.5) }}
+Closing Pressure: {{ chapter_brief.get("closing_pressure", 0.5) }}
+Scene Count: {{ chapter_brief.get("scene_count", 3) }}
+POV Character: {{ chapter_brief.get("pov_character", "") }}
+
+### Scene Summaries from Chapter Plan
+{% for summary in chapter_brief.get("scene_summaries", []) %}
+{{ loop.index }}. {{ summary }}
+{% endfor %}
+
+## Characters
+
+{% for char in characters %}
+- **{{ char.name }}**: {{ char.get("biography", "")[:150] }}
+  Speaking: {{ char.get("speaking_traits", {}) | tojson }}
+{% endfor %}
+
+{% if character_states %}
+## Current Character States
+{% for state in character_states %}
+- {{ state.character_id }}: emotional={{ state.emotional_state }}, knowledge={{ state.knowledge_state }}
+{% endfor %}
+{% endif %}
+
+{% if open_promises %}
+## Open Promises
+{% for p in open_promises %}
+- [{{ p.type }}] {{ p.description }} (salience: {{ p.salience }})
+{% endfor %}
+{% endif %}
+
+{% if preceding_scenes %}
+## Preceding Scenes
+{% for scene in preceding_scenes %}
+- Scene {{ scene.ordinal }}: {{ scene.purpose }}
+{% endfor %}
+{% endif %}
+
+## Style Profile
+
+{{ style_profile | tojson(indent=2) }}
+
+{% if user_context %}
+## User-Provided Context
+{% for ctx in user_context %}
+### {{ ctx.name }} ({{ ctx.type }})
+{{ ctx.content }}
+{% endfor %}
+{% endif %}
+
+## Your Task
+
+Design {{ chapter_brief.get("scene_count", 3) }} scenes for this chapter. For each scene, specify all fields in the SceneBrief schema:
+
+- ordinal, pov_character, location, time_marker
+- purpose, conflict, stakes, revelation (if any)
+- emotional_turn: how the emotional state shifts
+- dramatic_function: the scene's structural role
+- characters_present
+- prohibited_moves: what the scene must NOT do
+- themes_touched, symbols_touched
+- setup_links (what earlier setups this pays off)
+- payoff_links (what this sets up for later)
+- state_mutations: what changes after this scene (character knowledge, relationships, plot state)
+- is_pivotal: true if this is a structurally critical scene
+
+Respond with a JSON object matching the ScenePlanResponse schema.

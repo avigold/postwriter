@@ -1,0 +1,70 @@
+## Scene Brief
+
+Location: {{ scene_brief.get("location", "unspecified") }}
+Time: {{ scene_brief.get("time_marker", "unspecified") }}
+POV Character: {{ scene_brief.get("pov_character_id", "unspecified") }}
+Purpose: {{ scene_brief.get("purpose", "") }}
+Conflict: {{ scene_brief.get("conflict", "") }}
+Stakes: {{ scene_brief.get("stakes", "") }}
+{% if scene_brief.get("revelation") %}
+Revelation: {{ scene_brief.revelation }}
+{% endif %}
+Emotional Turn: {{ scene_brief.get("emotional_turn", "") }}
+Dramatic Function: {{ scene_brief.get("dramatic_function", "") }}
+
+{% if scene_brief.get("prohibited_moves") %}
+### PROHIBITED MOVES (do NOT do any of these)
+{% for move in scene_brief.prohibited_moves %}
+- {{ move }}
+{% endfor %}
+{% endif %}
+
+{% if scene_brief.get("themes_touched") %}
+### Themes to Embody (through action and detail, NOT statement)
+{% for theme in scene_brief.themes_touched %}
+- {{ theme }}
+{% endfor %}
+{% endif %}
+
+## Characters Present
+
+{% for char in characters %}
+### {{ char.get("name", "Unknown") }}
+{{ char.get("biography", "")[:200] }}
+Speaking style: {{ char.get("speaking_traits", {}) | tojson }}
+{% endfor %}
+
+{% if character_states %}
+## Current Character States
+{% for state in character_states %}
+- Emotional: {{ state.get("emotional_state", {}) | tojson }}
+  Knowledge: {{ state.get("knowledge_state", {}) | tojson }}
+{% endfor %}
+{% endif %}
+
+{% if preceding_scenes %}
+## Previous Scene(s) (for continuity)
+{% for scene in preceding_scenes %}
+---
+{{ scene.get("accepted_prose", scene.get("purpose", "No text available"))[:1000] }}
+---
+{% endfor %}
+{% endif %}
+
+{% if open_promises %}
+## Open Promises to Consider
+{% for p in open_promises %}
+- [{{ p.get("type", "unknown") }}] {{ p.get("description", "") }}
+{% endfor %}
+{% endif %}
+
+{% if branch_profile %}
+## Stylistic Direction: {{ branch_profile.label }}
+{{ branch_profile.instructions }}
+{% endif %}
+
+## Instructions
+
+Write this scene now. Output ONLY the prose — no headers, no scene numbers, no meta-commentary.
+The scene should be approximately 800-1500 words.
+Begin writing.

@@ -1,0 +1,59 @@
+## Novel Premise
+
+{{ premise }}
+
+## Controlling Design
+
+{{ controlling_design | tojson(indent=2) }}
+
+## Current Act
+
+Name: {{ act.get("name", "Unknown") }}
+Purpose: {{ act.get("purpose", "") }}
+Emotional Arc: {{ act.get("emotional_arc", {}) | tojson }}
+Target Chapter Count: {{ act.get("chapter_count", 8) }}
+
+## Characters
+
+{% for char in characters %}
+- **{{ char.name }}** ({{ "POV" if char.get("is_pov") else "non-POV" }}): {{ char.get("biography", "")[:200] }}
+{% endfor %}
+
+{% if themes %}
+## Active Themes
+{% for theme in themes %}
+- {{ theme }}
+{% endfor %}
+{% endif %}
+
+{% if preceding_chapters %}
+## Preceding Chapters (for continuity)
+{% for ch in preceding_chapters %}
+- Ch {{ ch.ordinal }}: "{{ ch.title }}" — {{ ch.function }}
+{% endfor %}
+{% endif %}
+
+{% if user_context %}
+## User-Provided Context
+{% for ctx in user_context %}
+### {{ ctx.name }} ({{ ctx.type }})
+{{ ctx.content }}
+{% endfor %}
+{% endif %}
+
+## Your Task
+
+Plan the individual chapters for this act. For each chapter, specify:
+
+- ordinal, title, function
+- emotional_contour: {opening_emotion, peak_emotion, closing_emotion, arc_shape}
+- opening_pressure and closing_pressure (0.0-1.0)
+- scene_count and one-sentence scene_summaries
+- themes_active in this chapter
+- pov_character name
+- transition_from_previous: how it connects to the prior chapter
+- contrast_with_neighbors: how it differs from adjacent chapters in tone/pace
+
+Also provide rhythm_notes: an overview of how pacing varies across these chapters.
+
+Respond with a JSON object matching the ChapterPlanResponse schema.

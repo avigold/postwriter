@@ -1,0 +1,55 @@
+## Novel Premise
+
+{{ premise }}
+
+## Controlling Design
+
+{{ controlling_design | tojson(indent=2) }}
+
+{% if themes %}
+## Themes
+{% for theme in themes %}
+- {{ theme }}
+{% endfor %}
+{% endif %}
+
+{% if existing_characters %}
+## Already-Designed Characters
+{% for char in existing_characters %}
+- {{ char.name }}: {{ char.get("biography", "") }}
+{% endfor %}
+{% endif %}
+
+{% if user_context %}
+## User-Provided Context
+{% for ctx in user_context %}
+### {{ ctx.name }} ({{ ctx.type }})
+{{ ctx.content }}
+{% endfor %}
+{% endif %}
+
+## Your Task
+
+Design the full cast for this novel. Include:
+
+1. **Main characters** (POV characters and primary antagonists): Full psychological profiles with speaking traits, secrets, moral constraints, and arc hypotheses.
+
+2. **Significant secondary characters**: Those who appear in multiple scenes and serve thematic or plot functions. Slightly less detailed but still psychologically grounded.
+
+3. **Relationship dynamics**: How the cast as a whole creates dramatic tension and embodies the themes.
+
+For each character, provide:
+- name, aliases, age
+- biography (2-4 sentences, focused on what drives them)
+- motives (primary and secondary)
+- fears and desires
+- secrets (at least one)
+- social_position
+- speaking_traits (vocabulary, rhythm, patterns, tics — these must be distinct between characters)
+- movement_traits (physical mannerisms)
+- moral_constraints (lines they won't cross)
+- arc_hypothesis (where they start → where they might end)
+- is_pov_character (true/false)
+- relationships to other characters in the cast
+
+Respond with a JSON object matching the CastResponse schema.
