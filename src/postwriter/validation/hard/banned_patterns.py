@@ -41,6 +41,26 @@ class BannedPatternsValidator(BaseValidator):
             r"\btime seemed to (slow|stop|freeze)\b",
             r"\beverything changed\b",
         ]
+
+        # Self-referential observation tic: narrator observing the observing
+        observation_tics = [
+            r"\b(registered|noted|filed|catalogued|clocked) this the way (he|she|they) (registered|noted|filed|catalogued|clocked)\b",
+            r"\bnoted the noting\b",
+            r"\bwatched (himself|herself|themselves) (watch|observe|notice)\b",
+            r"\bwhich was a thing (he|she|they) had (learned|learnt) to\b",
+            r"\ba (specific|particular) (quality|kind) of .{1,30} (he|she|they) had (learned|learnt) to\b",
+            r"\bthe way (he|she|they) (registered|noted|filed|watched|observed) (everything|most things|all things)\b",
+            r"\b(he|she|they) had (learned|learnt) to (keep|hold|maintain|hide) .{1,20} (off|from) (his|her|their) face\b",
+            r"\bhe was .{1,30} in a way that made .{1,30} note the\b",
+        ]
+        for pattern in observation_tics:
+            matches = list(re.finditer(pattern, ctx.prose, re.IGNORECASE))
+            for m in matches:
+                violations.append({
+                    "type": "observation_tic",
+                    "phrase": m.group(),
+                    "context": ctx.prose[max(0, m.start() - 20):m.end() + 20],
+                })
         for pattern in ai_tics:
             matches = list(re.finditer(pattern, ctx.prose, re.IGNORECASE))
             for m in matches:

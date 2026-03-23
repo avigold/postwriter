@@ -38,3 +38,4 @@ Slow burn in the first third — the reader should be seduced by the world befor
 - No "it was like something out of a film/novel/nightmare"
 - No characters who exist only to deliver exposition
 - No tidy moral lessons at the end
+- No self-referential observation constructions: "he registered this the way he registered", "he noted the noting", "he watched himself watch", "he filed this the way he filed", "which was a thing he had learned to", "a specific quality of X that he had learned to Y". The narrator observes; the narrator does not observe himself observing. This is the single most important stylistic prohibition in the novel. If the character notices something, simply narrate the noticing. Do not have the character note that he is the kind of person who notices things.

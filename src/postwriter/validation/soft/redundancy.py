@@ -19,5 +19,12 @@ class RedundancyCritic(BaseSoftCritic):
         "- Are there unnecessary qualifiers, filler phrases, or throat-clearing?\n"
         "- Could passages be cut without losing meaning or effect?\n"
         "- Is there deliberate repetition that serves a rhetorical purpose (this is acceptable)?\n"
+        "- CRITICAL: Does the prose repeat the same rhetorical construction across "
+        "multiple sentences or paragraphs? The most common form is the self-referential "
+        "observation: 'he noted X in the way he noted Y', 'a thing he had learned to Z', "
+        "'the specific quality of A that he had trained himself to B'. If the same "
+        "structural formula appears more than twice in a scene, it is a severe "
+        "redundancy problem regardless of how varied the content appears. "
+        "Score harshly for formulaic repetition of rhetorical structure.\n"
         "Score 0.0 = heavily redundant and bloated. 1.0 = lean, every sentence earns its place."
     )

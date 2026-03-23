@@ -21,6 +21,13 @@ class ProseVitalityCritic(BaseSoftCritic):
         "- Does the prose have energy, or does it feel dutiful and flat?\n"
         "- Are there any standout sentences or passages?\n"
         "- Are there cliches, dead metaphors, or filler phrases?\n"
+        "- CRITICAL: Does the prose fall into self-referential observation patterns? "
+        "For example: 'he registered this the way he registered most things', "
+        "'a specific quality of feeling he had learned to keep off his face', "
+        "'which was a thing he had learned to describe as intuitive'. "
+        "This pattern — the narrator observing that the character is the kind of person "
+        "who observes things — is a severe flaw. If it appears more than once, "
+        "score below 0.5 regardless of other qualities.\n"
         "Score 0.0 = lifeless boilerplate. 1.0 = every sentence earns its place with precision and force."
     )
 
