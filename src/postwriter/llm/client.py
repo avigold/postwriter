@@ -80,11 +80,27 @@ class LLMClient:
 
         import time
 
+        # Estimate input size for logging
+        msg_chars = sum(len(str(m.get("content", ""))) for m in messages)
+        sys_chars = len(system) if system else 0
+        logger.info(
+            "LLM call starting: tier=%s model=%s max_tokens=%d input_est=~%d chars tools=%s",
+            tier.value, model_id, max_tokens, msg_chars + sys_chars,
+            bool(tools),
+            extra={"model_tier": tier.value},
+        )
+
         last_error: Exception | None = None
         for attempt in range(MAX_RETRIES):
+            logger.debug(
+                "LLM attempt %d/%d for %s", attempt + 1, MAX_RETRIES, tier.value,
+                extra={"model_tier": tier.value},
+            )
             try:
                 t0 = time.monotonic()
+                logger.debug("Acquiring semaphore for %s...", tier.value)
                 async with sem:
+                    logger.debug("Semaphore acquired, calling API for %s...", tier.value)
                     response = await self._client.messages.create(**kwargs)
                 duration_ms = int((time.monotonic() - t0) * 1000)
 
@@ -115,6 +131,12 @@ class LLMClient:
                             "name": block.name,
                             "input": block.input,
                         })
+
+                logger.debug(
+                    "LLM response: stop=%s text_len=%d tool_blocks=%d",
+                    response.stop_reason, len(text), len(tool_use_blocks),
+                    extra={"model_tier": tier.value},
+                )
 
                 return LLMResponse(
                     text=text,

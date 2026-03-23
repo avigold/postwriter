@@ -55,8 +55,13 @@ class BaseAgent:
             extra={"agent_role": self.role, "model_tier": self.model_tier.value,
                    "manuscript_id": context.manuscript_id},
         )
+        logger.debug("Agent %s: building prompts...", self.role)
         system = self.build_system_prompt(context)
         user_message = self.build_user_message(context)
+        logger.debug(
+            "Agent %s: system=%d chars, user=%d chars",
+            self.role, len(system), len(user_message),
+        )
 
         messages = [{"role": "user", "content": user_message}]
 
@@ -67,10 +72,16 @@ class BaseAgent:
             if self.response_model
             else None
         )
+        logger.debug(
+            "Agent %s: tool_use=%s, max_tokens=%d, temp=%.1f",
+            self.role, bool(tools), self._max_tokens(), self._temperature(),
+        )
 
         try:
             from postwriter.cli.display import thinking
+            logger.debug("Agent %s: entering thinking spinner...", self.role)
             async with thinking(self._thinking_label()):
+                logger.debug("Agent %s: calling LLM...", self.role)
                 response = await self._llm.complete(
                     tier=self.model_tier,
                     messages=messages,
@@ -80,8 +91,14 @@ class BaseAgent:
                     tools=tools,
                     tool_choice=tool_choice,
                 )
+            logger.debug(
+                "Agent %s: LLM returned, stop=%s, text=%d chars, tools=%d blocks",
+                self.role, response.stop_reason, len(response.text), len(response.tool_use),
+            )
 
+            logger.debug("Agent %s: parsing response...", self.role)
             parsed = self.parse_response(response, context)
+            logger.debug("Agent %s: parse succeeded", self.role)
 
             duration_ms = int((time.monotonic() - t0) * 1000)
             logger.info(
