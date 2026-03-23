@@ -46,6 +46,8 @@ class PlanningOrchestrator:
         self,
         creative_brief: dict[str, Any],
         context_files: list[ContextFile] | None = None,
+        project_dir: str | None = None,
+        profile_name: str | None = None,
     ) -> Manuscript:
         """Run the full planning pipeline. Returns the manuscript with complete plan."""
         context_files = context_files or []
@@ -60,6 +62,17 @@ class PlanningOrchestrator:
         await self._session.flush()
         await self._session.commit()
         display.success(f"Manuscript created: {manuscript.id}")
+
+        # Save .postwriter immediately so resume works if we crash later
+        if project_dir:
+            from pathlib import Path
+            from postwriter.project import ProjectState, save_project
+            save_project(Path(project_dir), ProjectState(
+                manuscript_id=str(manuscript.id),
+                phase="planning",
+                profile=profile_name,
+                title=manuscript.title,
+            ))
 
         # Step 2: Generate premise
         display.section("Generating Premise")

@@ -153,9 +153,13 @@ async def _handle_new(
         try:
             # Phase 1: Planning
             planner = PlanningOrchestrator(session, llm)
-            manuscript = await planner.run(creative_brief, context_files)
+            manuscript = await planner.run(
+                creative_brief, context_files,
+                project_dir=str(project_dir), profile_name=profile_name,
+            )
 
-            # Save project state
+            # Save project state (also saved early inside planner.run,
+            # but update here in case title changed during planning)
             state = ProjectState(
                 manuscript_id=str(manuscript.id),
                 phase="drafting",
@@ -211,7 +215,44 @@ async def _resume(
     async with session_factory() as session:
         llm = LLMClient(settings.llm)
         try:
-            if state.phase in ("planning", "drafting"):
+            if state.phase == "planning":
+                # Planning was interrupted — check what exists and decide
+                from postwriter.canon.store import CanonStore
+                store = CanonStore(session)
+                chapters = await store.get_all_chapters(manuscript_id)
+                scenes_exist = False
+                for ch in chapters:
+                    scenes = await store.get_scenes(ch.id)
+                    if scenes:
+                        scenes_exist = True
+                        break
+
+                if scenes_exist:
+                    # Planning completed enough to have scenes — go to drafting
+                    display.section("Resuming from Drafting")
+                    display.info("Planning appears complete. Proceeding to drafting...")
+                    update_phase(project_dir, "drafting")
+                    await _do_drafting(session, llm, manuscript_id, settings, context_files, project_dir)
+                elif chapters:
+                    # Have chapters but no scenes — need to re-run scene planning
+                    display.section("Resuming Planning")
+                    display.info(f"Found {len(chapters)} chapters. Scene planning may be incomplete.")
+                    display.warning("Cannot resume partial planning yet. Please start a new project.")
+                    return
+                else:
+                    # Very early interruption — need to re-plan
+                    display.section("Resuming Planning")
+                    display.info("Planning was interrupted early. Re-running from premise...")
+                    display.warning("Cannot resume partial planning yet. Please start a new project.")
+                    return
+
+                update_phase(project_dir, "revising")
+                await _do_revision(session, llm, manuscript_id, project_dir)
+
+                update_phase(project_dir, "complete")
+                await _do_export(project_dir, manuscript_id)
+
+            elif state.phase == "drafting":
                 display.section("Resuming Drafting")
                 display.info("Skipping already-accepted scenes...")
                 await _do_drafting(session, llm, manuscript_id, settings, context_files, project_dir)
