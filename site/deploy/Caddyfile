@@ -1,9 +1,17 @@
 postwriter.app {
 	root * /var/www/postwriter
-	file_server
 
-	# SPA fallback
-	try_files {path} /index.html
+	# Serve actual files (epub, assets, etc.) directly
+	@fileExists file
+	handle @fileExists {
+		file_server
+	}
+
+	# SPA fallback for everything else
+	handle {
+		rewrite * /index.html
+		file_server
+	}
 
 	# Cache static assets aggressively
 	@static path /assets/*
