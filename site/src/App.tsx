@@ -159,6 +159,30 @@ function App() {
         </div>
       </section>
 
+      {/* Read the novel */}
+      <section className="border-t border-border py-20 bg-ink text-white">
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-white">
+            Read the output
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-white/60">
+            We pointed Postwriter at a premise — satirical horror about a culinary
+            trend among the ultra-wealthy that turns out to be human meat — and let it
+            run. 35 chapters. 150,000 words. A complete novel, generated in a single
+            session, with no human editing of the prose.
+          </p>
+          <a
+            href="/read"
+            className="mt-8 inline-block rounded-lg bg-accent px-8 py-4 text-base font-semibold text-white shadow-lg shadow-accent/25 transition-all hover:bg-accent-light hover:shadow-xl hover:shadow-accent/30"
+          >
+            Read <em>Black Meat</em>
+          </a>
+          <p className="mt-4 text-sm text-white/40">
+            150,000 words &middot; 35 chapters &middot; fast draft mode
+          </p>
+        </div>
+      </section>
+
       {/* How it works */}
       <section id="how" className="border-t border-border bg-white py-20">
         <div className="mx-auto max-w-5xl px-6">
