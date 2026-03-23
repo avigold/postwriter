@@ -1,5 +1,53 @@
 import { useState, useCallback } from "react";
-import { ReactReader } from "react-reader";
+import { ReactReader, ReactReaderStyle, type IReactReaderStyle } from "react-reader";
+
+// Dark theme: override only colours from the default ReactReaderStyle
+const darkStyles: IReactReaderStyle = {
+  ...ReactReaderStyle,
+  readerArea: {
+    ...ReactReaderStyle.readerArea,
+    backgroundColor: "#1a1a1a",
+  },
+  titleArea: {
+    ...ReactReaderStyle.titleArea,
+    color: "#666",
+  },
+  arrow: {
+    ...ReactReaderStyle.arrow,
+    color: "#555",
+  },
+  arrowHover: {
+    ...ReactReaderStyle.arrowHover,
+    color: "#999",
+  },
+  tocArea: {
+    ...ReactReaderStyle.tocArea,
+    background: "#111",
+  },
+  tocAreaButton: {
+    ...ReactReaderStyle.tocAreaButton,
+    color: "#aaa",
+    borderBottom: "1px solid #333",
+  },
+  tocButtonExpanded: {
+    ...ReactReaderStyle.tocButtonExpanded,
+    background: "#222",
+  },
+  tocButtonBar: {
+    ...ReactReaderStyle.tocButtonBar,
+    background: "#ccc",
+  },
+  tocButtonBarTop: {
+    ...ReactReaderStyle.tocButtonBarTop,
+  },
+  tocButtonBottom: {
+    ...ReactReaderStyle.tocButtonBottom,
+  },
+  loadingView: {
+    ...ReactReaderStyle.loadingView,
+    color: "#666",
+  },
+};
 
 function Reader() {
   const [location, setLocation] = useState<string | number>(0);
@@ -9,7 +57,7 @@ function Reader() {
   }, []);
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#1a1a1a" }}>
       {/* Header */}
       <header style={{
         borderBottom: "1px solid #333",
@@ -41,6 +89,7 @@ function Reader() {
           url="/black-meat-fast-draft.epub"
           location={location}
           locationChanged={locationChanged}
+          readerStyles={darkStyles}
           epubOptions={{
             flow: "paginated",
             manager: "default",
@@ -50,7 +99,20 @@ function Reader() {
               body: {
                 "font-family": "Georgia, 'Times New Roman', serif !important",
                 "line-height": "1.8 !important",
-                "padding": "0 0.5em !important",
+                color: "#ccc !important",
+                background: "#1a1a1a !important",
+              },
+              h1: {
+                color: "#ddd !important",
+              },
+              em: {
+                "font-style": "italic !important",
+              },
+              ".chapter-number": {
+                color: "#666 !important",
+              },
+              ".scene-break": {
+                color: "#555 !important",
               },
             });
           }}
