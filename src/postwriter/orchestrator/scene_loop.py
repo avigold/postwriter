@@ -101,7 +101,10 @@ class SceneLoop:
 
         for candidate in candidates:
             val_ctx = self._build_validation_context(candidate.prose, context)
-            results = await self._validator.run_hard(val_ctx)
+            if self._policy.run_soft_critics:
+                results = await self._validator.run_all(val_ctx)
+            else:
+                results = await self._validator.run_hard(val_ctx)
             scores = scores_from_validation(results)
             candidate.scores = scores
             candidate.hard_pass = scores.hard_pass
