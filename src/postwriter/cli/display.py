@@ -41,50 +41,67 @@ _THINKING_VERBS = [
 ]
 
 
+_active_spinner_lock = asyncio.Lock()
+_active_spinner_count = 0
+
+
 @asynccontextmanager
 async def thinking(label: str | None = None) -> AsyncGenerator[None, None]:
     """Show an animated thinking spinner with writerly status messages.
+
+    Uses Rich's Status context manager for proper in-place animation.
+    Only the first concurrent caller gets the spinner; others run silently
+    to avoid Rich's one-live-display limitation.
 
     Usage:
         async with display.thinking("Designing premise"):
             result = await slow_operation()
     """
+    global _active_spinner_count
+
+    async with _active_spinner_lock:
+        _active_spinner_count += 1
+        owns_spinner = _active_spinner_count == 1
+
+    if not owns_spinner:
+        try:
+            yield
+        finally:
+            async with _active_spinner_lock:
+                _active_spinner_count -= 1
+        return
+
+    verbs = list(_THINKING_VERBS)
+    random.shuffle(verbs)
+    initial = label or verbs[0]
+
+    status = console.status(f"  {initial}...", spinner="dots", spinner_style="cyan")
+    status.start()
+
+    # If no fixed label, rotate verbs in the background
     stop = asyncio.Event()
-    task = asyncio.create_task(_spinner_loop(stop, label))
+    rotate_task = None
+    if not label:
+        async def _rotate():
+            idx = 0
+            while not stop.is_set():
+                try:
+                    await asyncio.wait_for(stop.wait(), timeout=4.0)
+                    break
+                except asyncio.TimeoutError:
+                    idx = (idx + 1) % len(verbs)
+                    status.update(f"  {verbs[idx]}...")
+        rotate_task = asyncio.create_task(_rotate())
+
     try:
         yield
     finally:
         stop.set()
-        await task
-        # Clear the spinner line
-        console.print("\r" + " " * 80 + "\r", end="")
-
-
-async def _spinner_loop(stop: asyncio.Event, label: str | None) -> None:
-    frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-    verbs = list(_THINKING_VERBS)
-    random.shuffle(verbs)
-    verb_idx = 0
-    frame_idx = 0
-    verb = label or verbs[0]
-    ticks = 0
-
-    while not stop.is_set():
-        frame = frames[frame_idx % len(frames)]
-        console.print(f"\r  [cyan]{frame}[/cyan] [dim]{verb}...[/dim]   ", end="")
-        frame_idx += 1
-        ticks += 1
-
-        # Rotate verb every ~4 seconds (40 ticks at 100ms)
-        if not label and ticks % 40 == 0:
-            verb_idx = (verb_idx + 1) % len(verbs)
-            verb = verbs[verb_idx]
-
-        try:
-            await asyncio.wait_for(stop.wait(), timeout=0.1)
-            break
-        except asyncio.TimeoutError:
-            pass
+        if rotate_task:
+            await rotate_task
+        status.stop()
+        async with _active_spinner_lock:
+            _active_spinner_count -= 1
 
 
 def banner() -> None:
