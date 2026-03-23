@@ -101,12 +101,104 @@ class GlobalRevisionOrchestrator:
                 display.warning("Revisions skipped by user.")
                 return all_proposals
 
+        # Step 6: Execute revisions
+        if propagation_tasks:
+            display.section("Executing Revisions")
+            revised_count = await self._execute_revisions(
+                manuscript_id, propagation_tasks, manuscript_data
+            )
+            display.success(f"Revised {revised_count} scene(s)")
+
         display.success(
             f"Global revision complete: {len(all_proposals)} proposals, "
             f"{len(propagation_tasks)} backward propagation tasks"
         )
 
         return all_proposals
+
+    async def _execute_revisions(
+        self,
+        manuscript_id: uuid.UUID,
+        tasks: list[PropagationTask],
+        manuscript_data: dict[str, Any],
+    ) -> int:
+        """Execute backward propagation tasks by rewriting affected scenes."""
+        from postwriter.agents.local_rewriter import LocalRewriter
+        from postwriter.models.core import Scene, SceneDraft
+        from postwriter.prompts.loader import PromptLoader
+        from postwriter.repair.actions import RepairActionSpec
+        from postwriter.types import BranchStatus, RepairPriority
+
+        revised = 0
+        # Deduplicate by scene — multiple tasks may target the same scene
+        scene_tasks: dict[str, list[PropagationTask]] = {}
+        for task in tasks:
+            scene_tasks.setdefault(task.target_scene_id, []).append(task)
+
+        for scene_id_str, scene_revision_tasks in scene_tasks.items():
+            scene_id = uuid.UUID(scene_id_str)
+            scene = await self._session.get(Scene, scene_id)
+            if not scene or not scene.accepted_draft_id:
+                continue
+
+            # Get current accepted draft
+            draft = await self._session.get(SceneDraft, scene.accepted_draft_id)
+            if not draft:
+                continue
+
+            # Build repair actions from propagation tasks
+            repair_actions = [
+                RepairActionSpec(
+                    priority=RepairPriority.SETUP_PAYOFF,
+                    target_dimension="backward_propagation",
+                    instruction=task.instruction,
+                    preserve_constraints=["voice", "continuity", "scene_purpose"],
+                    issue_diagnosis=task.reason,
+                )
+                for task in scene_revision_tasks
+            ]
+
+            # Get scene context for the rewriter
+            from postwriter.canon.slicer import CanonSlicer
+            slicer = CanonSlicer(self._session)
+            context = await slicer.build_scene_context(manuscript_id, scene_id)
+
+            # Run the rewriter
+            display.info(f"  Revising scene {scene_id_str[:8]}... ({len(repair_actions)} action(s))")
+            rewriter = LocalRewriter(
+                self._llm, PromptLoader(), repair_actions=repair_actions
+            )
+            context.extra["current_prose"] = draft.prose
+            result = await rewriter.execute(context)
+
+            if result.success and result.raw_response and len(result.raw_response) > 100:
+                # Save as a new version, preserve original
+                new_draft = SceneDraft(
+                    scene_id=scene_id,
+                    branch_label=f"{draft.branch_label}_revised",
+                    version=draft.version + 1,
+                    prose=result.raw_response,
+                    word_count=len(result.raw_response.split()),
+                    branch_status=BranchStatus.SELECTED,
+                )
+                self._session.add(new_draft)
+
+                # Demote old draft to pruned (but don't delete)
+                draft.branch_status = BranchStatus.PRUNED
+
+                await self._session.flush()
+
+                # Update scene to point to new draft
+                scene.accepted_draft_id = new_draft.id
+                await self._session.flush()
+                await self._session.commit()
+
+                revised += 1
+                display.success(f"    Revised ({new_draft.word_count} words)")
+            else:
+                display.warning(f"    Skipped — rewriter produced no usable output")
+
+        return revised
 
     async def _gather_data(self, manuscript_id: uuid.UUID) -> dict[str, Any]:
         """Gather all manuscript data needed by audit passes."""
