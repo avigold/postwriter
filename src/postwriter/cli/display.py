@@ -71,27 +71,37 @@ async def thinking(label: str | None = None) -> AsyncGenerator[None, None]:
                 _active_spinner_count -= 1
         return
 
+    import time as _time
     verbs = list(_THINKING_VERBS)
     random.shuffle(verbs)
     initial = label or verbs[0]
+    t0 = _time.monotonic()
 
     status = console.status(f"  {initial}...", spinner="dots", spinner_style="cyan")
     status.start()
 
-    # If no fixed label, rotate verbs in the background
+    # Rotate verbs and show elapsed time
     stop = asyncio.Event()
     rotate_task = None
-    if not label:
-        async def _rotate():
-            idx = 0
-            while not stop.is_set():
-                try:
-                    await asyncio.wait_for(stop.wait(), timeout=4.0)
-                    break
-                except asyncio.TimeoutError:
+
+    async def _rotate():
+        idx = 0
+        verb = initial
+        while not stop.is_set():
+            try:
+                await asyncio.wait_for(stop.wait(), timeout=4.0)
+                break
+            except asyncio.TimeoutError:
+                if not label:
                     idx = (idx + 1) % len(verbs)
-                    status.update(f"  {verbs[idx]}...")
-        rotate_task = asyncio.create_task(_rotate())
+                    verb = verbs[idx]
+                elapsed = int(_time.monotonic() - t0)
+                if elapsed >= 10:
+                    status.update(f"  {verb}... ({elapsed}s)")
+                else:
+                    status.update(f"  {verb}...")
+
+    rotate_task = asyncio.create_task(_rotate())
 
     try:
         yield

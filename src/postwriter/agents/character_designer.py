@@ -82,4 +82,4 @@ class CharacterDesigner(BaseAgent):
         return base
 
     def _max_tokens(self) -> int:
-        return 16384
+        return 8192  # Opus is slow with long output; 8K is enough for a full cast
