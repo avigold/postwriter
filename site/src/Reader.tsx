@@ -26,7 +26,7 @@ function Reader() {
         <div style={{ textAlign: "center" }}>
           <span style={{ color: "#999", fontSize: 14 }}>Black Meat</span>
           <span style={{ color: "#444", margin: "0 8px" }}>|</span>
-          <span style={{ color: "#777", fontSize: 12 }}>by Avram Score</span>
+          <span style={{ color: "#777", fontSize: 12 }}>by Postwriter</span>
           <span style={{ color: "#444", margin: "0 8px" }}>|</span>
           <span style={{ color: "#8b5cf6", fontSize: 12 }}>generated in a single session</span>
         </div>
