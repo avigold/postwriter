@@ -204,6 +204,48 @@ function App() {
         </div>
       </section>
 
+      {/* Context files */}
+      <section className="border-t border-border bg-white py-20">
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">
+                Spec-driven writing
+              </h2>
+              <p className="mt-4 leading-relaxed text-muted">
+                If you have a vision for your novel — a style guide, character sketches,
+                a plot outline, sample prose you admire — you can place those files in a
+                <code className="mx-1 rounded bg-ink/5 px-1.5 py-0.5 text-sm">context/</code>
+                folder and the system will incorporate them into every decision it makes,
+                from premise design to sentence-level repair.
+              </p>
+              <p className="mt-4 leading-relaxed text-muted">
+                Context files are entirely optional. Without them, the system asks you
+                questions interactively and builds the creative brief from your answers.
+                With them, it skips the questions your files already answer and uses your
+                reference materials as ground truth for voice, character, and structure.
+              </p>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-border bg-ink">
+              <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+                <div className="h-3 w-3 rounded-full bg-red-500/70" />
+                <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
+                <div className="h-3 w-3 rounded-full bg-green-500/70" />
+                <span className="ml-3 font-mono text-xs text-white/40">context/</span>
+              </div>
+              <pre className="p-6 font-mono text-sm leading-loose text-green-400/90">
+{`context/
+  style-guide.md      # voice, tone, banned phrases
+  characters.md       # cast with speaking traits
+  plot-outline.md     # structure and key beats
+  world.md            # setting and rules
+  sample-chapter.md   # prose to emulate`}
+              </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Install */}
       <section id="install" className="border-t border-border bg-white py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
