@@ -4,59 +4,59 @@ const STEPS = [
   {
     num: "01",
     title: "Plan",
-    desc: "Architect agents design the premise, characters, structure, and style profile. You approve the creative direction.",
+    desc: "Specialised agents design the premise, cast, chapter structure, and style profile from your creative brief. You approve the direction before anything gets written.",
   },
   {
     num: "02",
     title: "Draft",
-    desc: "Each scene is drafted 3\u20135 times in parallel, each using a distinct rhetorical strategy \u2014 subtext-heavy, lyrical, compressed. The best survives.",
+    desc: "Every scene is drafted three to five times in parallel, each attempt pursuing a different rhetorical strategy — one restrained and subtext-heavy, another lyrical, another stripped back to the bone. The strongest version is selected.",
   },
   {
     num: "03",
     title: "Validate",
-    desc: "15 specialised critics check continuity, POV, tension, voice, dialogue, thematic integration, and more.",
+    desc: "Fifteen specialised critics evaluate each draft for continuity, point of view, dramatic tension, voice consistency, dialogue quality, thematic integration, and more.",
   },
   {
     num: "04",
     title: "Repair",
-    desc: "Targeted rewrites fix specific problems while preserving what works. The rewriter touches only what's broken.",
+    desc: "When a draft fails validation, a targeted rewriter fixes the specific problems — a POV slip, a banned phrase, a continuity error — while leaving everything else intact.",
   },
   {
     num: "05",
     title: "Analyse",
-    desc: "54 literary device types tracked across the manuscript. Overuse, burstiness, imagery monoculture \u2014 all monitored.",
+    desc: "The system tracks fifty-four types of literary device across the manuscript, flagging overuse, clumping, imagery monoculture, and the kind of rhetorical habits that make AI prose feel monotonous.",
   },
   {
     num: "06",
     title: "Revise",
-    desc: "Manuscript-level audits check promises, arcs, rhythm, and theme. Backward propagation strengthens earlier scenes.",
+    desc: "After all scenes are drafted, manuscript-level audits check that promises pay off, character arcs land, and themes are dramatised rather than stated. If a late chapter exposes weak preparation, the system revises earlier scenes.",
   },
 ];
 
 const FEATURES = [
   {
     title: "Explicit story state",
-    desc: "The database tracks character knowledge, timelines, and promises. The prose is output, not the source of truth.",
+    desc: "Character knowledge, timelines, and narrative promises are tracked in a database, so the system reasons about the story rather than guessing from prose alone.",
   },
   {
     title: "Deliberate variation",
-    desc: "Each branch represents a rhetorical strategy \u2014 subtext-heavy, lyrical, compressed, intimate \u2014 and the strongest is selected.",
+    desc: "Branches represent genuine rhetorical alternatives — subtext-heavy, lyrical, compressed, intimate — rather than random paraphrases of the same approach.",
   },
   {
-    title: "54 device types",
-    desc: "From alliteration to subtext exchange. Rule-based and model-based detection. Overuse alerts.",
+    title: "Fifty-four device types",
+    desc: "The system detects literary devices from alliteration to subtext exchange, using both rule-based pattern matching and model-based analysis, and alerts when any device becomes a crutch.",
   },
   {
     title: "Model tiering",
-    desc: "Opus for pivotal creative decisions. Sonnet for drafting. Haiku for mechanical validation. Cost-efficient by design.",
+    desc: "The most capable model handles pivotal creative decisions, a fast workhorse model drafts and critiques, and a lightweight model runs mechanical validation. You pay for intelligence where it matters.",
   },
   {
     title: "Backward propagation",
-    desc: "Weak payoffs in chapter 30? The system modifies chapter 8 to seed better preparation.",
+    desc: "When a payoff in chapter thirty falls flat, the system identifies which earlier scenes need strengthening and rewrites them to seed better preparation.",
   },
   {
     title: "Context files",
-    desc: "Drop in style guides, character notes, or sample writing. The system adapts to your creative vision.",
+    desc: "You can drop style guides, character sketches, sample prose, or plot outlines into a folder, and the system incorporates them into every decision it makes.",
   },
 ];
 
@@ -92,14 +92,15 @@ function App() {
           Early access &mdash; free during beta
         </div>
         <h1 className="text-5xl font-bold tracking-tight leading-[1.1] sm:text-6xl">
-          The whole novel.
+          A novel is an
           <br />
-          <span className="text-accent">Every draft. Every pass.</span>
+          <span className="text-accent">engineering problem.</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-          Postwriter orchestrates the entire process of writing a novel: planning,
-          multi-branch drafting, validation, repair, and manuscript-level revision.
-          One command. An entire book.
+          Postwriter generates complete, manuscript-length fiction through
+          multi-pass orchestration — planning the structure, drafting each scene
+          in competing stylistic variations, validating against explicit story state,
+          and revising at the level of the whole book.
         </p>
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
@@ -129,7 +130,7 @@ function App() {
             <span className="ml-3 font-mono text-xs text-white/40">postwriter</span>
           </div>
           <pre className="overflow-x-auto p-6 font-mono text-sm leading-relaxed text-green-400/90">
-{`$ postwriter new --profile high_quality
+{`$ postwriter --profile high_quality
 
   POSTWRITER
   Orchestrated Long-Form Fiction
@@ -141,17 +142,17 @@ function App() {
       plot: premise.md
       style: style-guide.md
 
-  Generating Premise (opus)...
+  ⠧ Designing the premise...
   ✓ Premise approved
 
-  Designing Act Structure (opus)...
+  ⠧ Building the structural spine...
   ✓ 3 acts, 34 chapters, 112 scenes
 
   Drafting Chapter 1: The Invitation
-    Scene 1: 3 branches generated
-    ✓ Accepted: restrained_subtext_heavy (1,203 words, score=0.81)
-    Scene 2: 3 branches generated
-    ✓ Accepted: intimate_free_indirect (987 words, score=0.77)
+    ⠧ Chasing the voice...
+    ✓ restrained_subtext_heavy (1,203 words, score=0.81)
+    ⠧ Fabulating...
+    ✓ intimate_free_indirect (987 words, score=0.77)
 
   Drafting ██████████░░░░░░░░░░ 34% — 28,441 words`}
           </pre>
@@ -162,12 +163,12 @@ function App() {
       <section id="how" className="border-t border-border bg-white py-20">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight">
-            Six passes. One manuscript.
+            How it works
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-muted">
-            Raw one-pass generation is inadequate for serious fiction.
-            Postwriter treats novel writing as an engineering problem with
-            multiple stages of refinement.
+            A single generation pass can't sustain a novel. Postwriter runs
+            six distinct phases, each with its own agents and objectives,
+            to produce fiction that holds together across a full manuscript.
           </p>
           <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {STEPS.map((step) => (
@@ -187,7 +188,7 @@ function App() {
       <section id="features" className="border-t border-border py-20">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight">
-            Built for long-horizon narrative control
+            What makes it different
           </h2>
           <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
@@ -206,7 +207,7 @@ function App() {
       {/* Install */}
       <section id="install" className="border-t border-border bg-white py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="text-3xl font-bold tracking-tight">Get started in three commands</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Get started</h2>
           <div className="mx-auto mt-10 max-w-xl text-left">
             <div className="overflow-hidden rounded-xl border border-border bg-ink">
               <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
@@ -217,19 +218,20 @@ function App() {
               <pre className="overflow-x-auto p-6 font-mono text-sm leading-loose text-green-400/90">
 {`$ git clone https://github.com/avigold/postwriter.git
 $ cd postwriter && uv sync
-$ uv run postwriter new`}
+$ uv run postwriter`}
               </pre>
             </div>
           </div>
           <p className="mt-6 text-sm text-muted">
-            Requires Python 3.12+ and Docker. See the{" "}
+            Requires Python 3.12+ and Docker for the database layer.
+            The{" "}
             <a
               href="https://github.com/avigold/postwriter#quick-start"
               className="text-accent underline decoration-accent/30 hover:decoration-accent"
             >
-              full setup guide
+              setup guide
             </a>{" "}
-            for details.
+            covers everything in detail.
           </p>
         </div>
       </section>
@@ -239,12 +241,12 @@ $ uv run postwriter new`}
         <div className="mx-auto max-w-xl px-6 text-center">
           <h2 className="text-3xl font-bold tracking-tight">Hosted version coming soon</h2>
           <p className="mt-4 text-muted">
-            We're building a hosted version so you can write without
-            managing infrastructure. Leave your email for early access.
+            We're building a hosted version that handles the infrastructure
+            for you. Leave your email if you'd like early access when it launches.
           </p>
           {submitted ? (
             <div className="mt-8 rounded-lg border border-green-200 bg-green-50 px-6 py-4 text-green-800">
-              You're on the list. We'll be in touch.
+              You're on the list.
             </div>
           ) : (
             <form
