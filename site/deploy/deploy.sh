@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
-# Deploy site to Hetzner. Run from the site/ directory.
+# Deploy site: runs git pull + build on the server.
+# Usage: ./deploy/deploy.sh [server-ip]
 set -euo pipefail
 
-SERVER="${1:?Usage: ./deploy/deploy.sh <server-ip-or-hostname>}"
-
-echo "=== Building ==="
-npx vite build --outDir dist
+SERVER="${1:-204.168.181.165}"
 
 echo "=== Deploying to $SERVER ==="
-rsync -avz --delete dist/ "root@${SERVER}:/var/www/postwriter/"
-
-echo "=== Done ==="
-echo "Site live at https://postwriter.app"
+ssh "root@${SERVER}" "bash /opt/postwriter/site/deploy/deploy-server.sh"
+echo "=== Site live at https://postwriter.app ==="
