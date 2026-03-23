@@ -186,12 +186,21 @@ class BaseAgent:
         # Try to parse as JSON from text
         if self.response_model and response.text:
             try:
-                # Try to extract JSON from the response
                 text = response.text.strip()
+                # Strip markdown code blocks
                 if text.startswith("```"):
-                    # Strip markdown code blocks
                     lines = text.split("\n")
                     text = "\n".join(lines[1:-1]) if len(lines) > 2 else text
+                # Find the JSON object/array in the text
+                json_start = text.find("{")
+                json_start_arr = text.find("[")
+                if json_start < 0 or (0 <= json_start_arr < json_start):
+                    json_start = json_start_arr
+                if json_start > 0:
+                    text = text[json_start:]
+                # Fix common JSON issues: trailing commas
+                import re
+                text = re.sub(r",\s*([}\]])", r"\1", text)
                 data = json.loads(text)
                 return self.response_model.model_validate(data)
             except (json.JSONDecodeError, Exception) as e:
