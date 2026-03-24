@@ -74,14 +74,6 @@ function App() {
             <a href="#how" className="text-sm text-muted hover:text-ink transition-colors">How it works</a>
             <a href="#features" className="text-sm text-muted hover:text-ink transition-colors">Features</a>
             <a href="#install" className="text-sm text-muted hover:text-ink transition-colors">Install</a>
-            <a
-              href="https://github.com/avigold/postwriter"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted hover:text-ink transition-colors"
-            >
-              GitHub
-            </a>
           </div>
         </div>
       </nav>
