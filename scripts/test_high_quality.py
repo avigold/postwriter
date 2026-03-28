@@ -82,14 +82,19 @@ async def main():
             )
             dt = int(time.monotonic() - t0)
 
+            await session.commit()
+
             if result:
                 print(f"\nResult: {result.label}")
                 print(f"  Words: {result.word_count}")
                 print(f"  Score: {result.scores.composite if result.scores else 'N/A'}")
                 print(f"  Hard pass: {result.hard_pass}")
                 print(f"  Time: {dt}s")
-                print(f"\nFirst 500 chars:")
-                print(result.prose[:500])
+                print(f"\n{'='*60}")
+                print(f"FULL SCENE PROSE")
+                print(f"{'='*60}\n")
+                print(result.prose)
+                print(f"\n{'='*60}")
             else:
                 print("Scene processing failed")
 

@@ -274,14 +274,13 @@ function App() {
                 <div className="h-3 w-3 rounded-full bg-green-500/70" />
               </div>
               <pre className="overflow-x-auto p-6 font-mono text-sm leading-loose text-green-400/90">
-{`$ git clone https://github.com/avigold/postwriter.git
-$ cd postwriter && uv sync
-$ uv run postwriter`}
+{`$ pip install postwriter
+$ postwriter`}
               </pre>
             </div>
           </div>
           <p className="mt-6 text-sm text-muted">
-            Requires Python 3.12+ and Docker for the database layer.
+            Requires Python 3.12+, Docker for the database, and an Anthropic API key.
             The{" "}
             <a
               href="https://github.com/avigold/postwriter#quick-start"
